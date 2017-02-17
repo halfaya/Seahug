@@ -79,7 +79,7 @@ listFunctor = F List
                 (function-extensionality ∘ lid ∘ fcong)
                 (λ g f → function-extensionality (lcomp g f))
 
--- pairs
+-- products
 record _×_ (A B : Set) : Set where
   constructor _,_
   field
@@ -99,17 +99,17 @@ pcomp : {X A B C : Set} → (g : B → C) → (f : A → B) → (a : X × A) →
 pcomp g f (x , a) = refl
 
 -- examples
-pairFunctor : Set → Functor
-pairFunctor A = F (_×_ A)
+productFunctor : Set → Functor
+productFunctor A = F (_×_ A)
                   pmap
                   (function-extensionality ∘ pid ∘ fcong)
                   (λ g f -> function-extensionality (pcomp g f))
 
-listPairFunctor : Set → Functor
-listPairFunctor A = listFunctor ◇ pairFunctor A
+listProductFunctor : Set → Functor
+listProductFunctor A = listFunctor ◇ productFunctor A
 
 data Bool : Set where
   true  : Bool
   false : Bool
 
-lpf = F₀ (listPairFunctor Bool)
+lpf = F₀ (listProductFunctor Bool)
