@@ -98,13 +98,13 @@ pid p (x , a) = pcong refl (p a)
 pcomp : {X A B C : Set} → (g : B → C) → (f : A → B) → (a : X × A) → (pmap (g ∘ f)) a ≡ ((pmap g) ∘ (pmap f)) a
 pcomp g f (x , a) = refl
 
--- examples
 productFunctor : Set → Functor
 productFunctor A = F (_×_ A)
                   pmap
                   (function-extensionality ∘ pid ∘ fcong)
                   (λ g f -> function-extensionality (pcomp g f))
 
+-- examples
 listProductFunctor : Set → Functor
 listProductFunctor A = listFunctor ◇ productFunctor A
 
