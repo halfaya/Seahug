@@ -104,6 +104,13 @@ productFunctor A = F (_×_ A)
                   (function-extensionality ∘ pid ∘ fcong)
                   (λ g f -> function-extensionality (pcomp g f))
 
+-- constant functor
+constantFunctor : Set → Functor
+constantFunctor A = F (λ _   → A)
+                      (λ _   → id A)
+                      (λ _   → refl)
+                      (λ _ _ → refl)
+
 -- examples
 listProductFunctor : Set → Functor
 listProductFunctor A = listFunctor ◇ productFunctor A
@@ -112,4 +119,5 @@ data Bool : Set where
   true  : Bool
   false : Bool
 
+cbf = F₀ (constantFunctor Bool)
 lpf = F₀ (listProductFunctor Bool)
