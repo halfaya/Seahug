@@ -13,6 +13,12 @@ x = Fst ("a", 0)
 
 type FI = Fst Int
 
+newtype Const a b = Const {getConst ∷ a}
+
+-- TODO: Check this
+instance Functor (Const a) where
+  fmap _ = id
+
 newtype Compose f g a = Compose {getCompose ∷ f (g a)}
 
 instance (Functor f, Functor g) => Functor (Compose f g) where
