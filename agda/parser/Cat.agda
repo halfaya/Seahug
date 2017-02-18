@@ -56,8 +56,8 @@ _◇_ : Functor → Functor → Functor
 -- identity functor
 idFunctor : Functor
 idFunctor = F (id Set)
-              (id {!!})
-              (id {!!})
+              (λ f → f)
+              (λ p → p)
               (λ _ _ → refl)
 
 -- constant functor
