@@ -1,4 +1,4 @@
-{-# LANGUAGE ExplicitForAll #-}
+{-# LANGUAGE ExplicitForAll, UnicodeSyntax #-}
 
 module Parser where
 

@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFunctor, UnicodeSyntax #-}
 
 module Cat where
 
@@ -13,16 +13,23 @@ x = Fst ("a", 0)
 
 type FI = Fst Int
 
+newtype Identity a = Identity {runIdentity ∷ a}
+
+instance Functor Identity where
+  fmap f (Identity x) = Identity (f x)
+
 newtype Const a b = Const {getConst ∷ a}
 
 -- TODO: Check this
 instance Functor (Const a) where
-  fmap _ = id
+  fmap _ (Const x) = (Const x)
+
+y = (Const 3)  
 
 newtype Compose f g a = Compose {getCompose ∷ f (g a)}
 
 instance (Functor f, Functor g) => Functor (Compose f g) where
-  fmap h (Compose x) = Compose (fmap  (fmap h) x)
+  fmap h (Compose x) = Compose (((fmap . fmap) h) x)
 
 --newtype Parser s t = P ([s] → [(t, [s])])
 type Parser s t = Compose ((→) [s]) (Compose [] (Fst [s])) t

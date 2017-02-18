@@ -5,7 +5,7 @@ infixr 5 _∷_
 infixr 9 _∘_ _◇_
 infixr 2 _×_
 
-id : (A : Set) → A → A
+id : ∀ {ℓ} → (A : Set ℓ) → A → A
 id A a = a
 
 -- function composition
@@ -52,6 +52,20 @@ _◇_ : Functor → Functor → Functor
     (g₁ ∘ f₁)
     (g₁id ∘ f₁id)
     (λ g f → trans (cong g₁ (f₁comp g f)) (g₁comp (f₁ g) (f₁ f)))
+
+-- identity functor
+idFunctor : Functor
+idFunctor = F (id Set)
+              (id {!!})
+              (id {!!})
+              (λ _ _ → refl)
+
+-- constant functor
+constantFunctor : Set → Functor
+constantFunctor A = F (λ _   → A)
+                      (λ _   → id A)
+                      (λ _   → refl)
+                      (λ _ _ → refl)
 
 -- lists
 data List (A : Set) : Set where
@@ -103,13 +117,6 @@ productFunctor A = F (_×_ A)
                   pmap
                   (function-extensionality ∘ pid ∘ fcong)
                   (λ g f -> function-extensionality (pcomp g f))
-
--- constant functor
-constantFunctor : Set → Functor
-constantFunctor A = F (λ _   → A)
-                      (λ _   → id A)
-                      (λ _   → refl)
-                      (λ _ _ → refl)
 
 -- examples
 listProductFunctor : Set → Functor
