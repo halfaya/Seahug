@@ -38,7 +38,7 @@ record Functor : Set₁ where
   field
     F₀     : Set → Set
     F₁     : {A B : Set} → (A → B) → (F₀ A → F₀ B)
-    F₁Id   : {A : Set} → {f : A → A} → f ≡ id A → (F₁ f) ≡ id (F₀ A)
+    F₁Id   : {A : Set} → (F₁ (id A)) ≡ id (F₀ A)
     F₁Comp : {A B C : Set} → (g : B → C) → (f : A → B) → (F₁ (g ∘ f)) ≡ ((F₁ g) ∘ (F₁ f))
 
 --  F₁Id   : {A : Set} → {f : A → A} → ((a : A) → f a ≡ a) → ((b : F₀ A) → ((F₁ f) b ≡ b))
@@ -50,21 +50,21 @@ _◇_ : Functor → Functor → Functor
 (F g₀ g₁ g₁id g₁comp) ◇ (F f₀ f₁ f₁id f₁comp) =
   F (g₀ ∘ f₀)
     (g₁ ∘ f₁)
-    (g₁id ∘ f₁id)
+    (trans (cong g₁ f₁id) g₁id)
     (λ g f → trans (cong g₁ (f₁comp g f)) (g₁comp (f₁ g) (f₁ f)))
 
 -- identity functor
 idFunctor : Functor
 idFunctor = F (id Set)
               (λ f → f)
-              (λ p → p)
+              refl
               (λ _ _ → refl)
 
 -- constant functor
 constantFunctor : Set → Functor
 constantFunctor A = F (λ _   → A)
                       (λ _   → id A)
-                      (λ _   → refl)
+                      refl
                       (λ _ _ → refl)
 
 -- lists
@@ -79,9 +79,9 @@ lmap f (x ∷ xs) = f x ∷ lmap f xs
 lcong : {A : Set} → {a b : A} → {as bs : List A} → (a ≡ b) → (as ≡ bs) → (a ∷ as ≡ b ∷ bs)
 lcong refl refl = refl
 
-lid : {A : Set} → {f : A → A} → ((a : A) → f a ≡ id A a) → ((b : List A) → ((lmap f) b ≡ id (List A) b))
-lid _ []       = refl
-lid p (a ∷ as) = lcong (p a) (lid p as)
+lid : {A : Set} → (a : List A) → (lmap (id A)) a ≡ id (List A) a
+lid []       = refl
+lid (a ∷ as) = lcong refl (lid as)
 
 lcomp : {A B C : Set} → (g : B → C) → (f : A → B) → (a : List A) → (lmap (g ∘ f)) a ≡ ((lmap g) ∘ (lmap f)) a
 lcomp _ _ []       = refl
@@ -90,7 +90,7 @@ lcomp g f (_ ∷ as) = lcong refl (lcomp g f as)
 listFunctor : Functor
 listFunctor = F List
                 lmap
-                (function-extensionality ∘ lid ∘ fcong)
+                (function-extensionality lid)
                 (λ g f → function-extensionality (lcomp g f))
 
 -- products
@@ -106,8 +106,8 @@ pmap f (x , a) = (x , f a)
 pcong : {A B : Set} → {a₁ a₂ : A} → {b₁ b₂ : B} → (a₁ ≡ a₂) → (b₁ ≡ b₂) → (a₁ , b₁) ≡ (a₂ , b₂)
 pcong refl refl = refl
 
-pid : {X A : Set} → {f : A → A} → ((a : A) → f a ≡ id A a) → ((b : X × A) → ((pmap f) b ≡ id (X × A) b))
-pid p (x , a) = pcong refl (p a)
+pid : {X A : Set} → ((p : X × A) → ((pmap (id A)) p ≡ id (X × A) p))
+pid (x , a) = pcong refl refl
 
 pcomp : {X A B C : Set} → (g : B → C) → (f : A → B) → (a : X × A) → (pmap (g ∘ f)) a ≡ ((pmap g) ∘ (pmap f)) a
 pcomp g f (x , a) = refl
@@ -115,7 +115,7 @@ pcomp g f (x , a) = refl
 productFunctor : Set → Functor
 productFunctor A = F (_×_ A)
                   pmap
-                  (function-extensionality ∘ pid ∘ fcong)
+                  (function-extensionality pid)
                   (λ g f -> function-extensionality (pcomp g f))
 
 -- examples
